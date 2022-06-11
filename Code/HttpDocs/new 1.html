@@ -1,0 +1,9 @@
+<script type="text/javascript" src="Concurrent.Thread.js"></script>
+ <script type="text/javascript">
+     Concurrent.Thread.create(function(){
+         var i = 0;
+         while ( 1 ) {
+             document.body.innerHTML += i++ + "<br>";
+         }
+     });
+ </script> 

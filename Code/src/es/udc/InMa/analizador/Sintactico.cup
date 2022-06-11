@@ -1,0 +1,90 @@
+/*
+ * Analizador sintáctico 
+ * Brais García Brenlla
+ *
+ *En caso de erro devolve null
+ */
+
+package es.udc.InMa.analizador; 
+import java_cup.runtime.*;
+
+parser code 
+{:
+
+	private String autor = null;
+	private String titulo = null;
+	private String texto = null;
+	private String imagen = null;
+	private String video = null;
+	private String categoria = null;
+	private String fecha = null;
+	private String tipo = null;
+	private String color = null;
+	private String letra = null;
+	private String posicion = null;
+	private String erro = null;
+	  
+	  
+    public void syntax_error(Symbol s){ 
+        System.out.println("Error Sintáctico . No se esperaba este componente: " +s.value+"."); 
+    } 
+
+   
+    public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception{ 
+        System.out.println("Error síntactico irrecuperable. Componente " + s.value + 
+        " no reconocido."); 
+    }  
+    
+:} 
+
+terminal String AUTOR,TITULO,TEXTO,IMAGEN,VIDEO,CATEGORIA,FECHA,TIPO,COLOR,LETRA,POSICION,TEXTOBASICO,CAMPO,FINCAMPO;
+
+non terminal linea;
+non terminal String info;
+non terminal String body;
+non terminal MyInformacion ini;
+
+
+start with ini; 
+
+ini::=CAMPO:a body:b 	{:if(!a.equals(b)) RESULT = new MyInformacion("O campo <"+a+" non coresponde co peche </"+b);
+						 if(erro!=null) RESULT = new MyInformacion(erro);
+						 else RESULT = new MyInformacion(autor, titulo, texto, video, imagen, categoria, fecha, tipo, color, letra, posicion);
+						:}
+;
+
+body ::= 
+   linea body:a			{:RESULT=a;:}
+ | linea FINCAMPO:a		{:RESULT=a;:}
+; 
+
+linea  ::= 
+    info:a FINCAMPO:b   {:if(!a.equals(b)) erro="O campo <"+a+" non coresponde co peche </"+b;:}
+;
+
+info ::=
+	  AUTOR:b TEXTOBASICO:a 	{:autor=a;RESULT=b;:}
+	| TITULO:b TEXTOBASICO:a 	{:titulo=a;RESULT=b;:}
+	| TEXTO:b TEXTOBASICO:a 	{:texto=a;RESULT=b;:}
+	| IMAGEN:b TEXTOBASICO:a 	{:imagen=a;RESULT=b;:}
+	| VIDEO:b TEXTOBASICO:a 	{:video=a;RESULT=b;:}
+	| CATEGORIA:b TEXTOBASICO:a {:categoria=a;RESULT=b;:}
+	| FECHA:b TEXTOBASICO:a 	{:fecha=a;RESULT=b;:}
+	| TIPO:b TEXTOBASICO:a 		{:tipo=a;RESULT=b;:}
+	| COLOR:b TEXTOBASICO:a 	{:color=a;RESULT=b;:}
+	| LETRA:b TEXTOBASICO:a 	{:letra=a;RESULT=b;:}
+	| POSICION:b TEXTOBASICO:a 	{:posicion=a;RESULT=b;:}
+	| CAMPO:b TEXTOBASICO 		{:RESULT=b;:}
+	| AUTOR:b  					{:RESULT=b;:}
+	| TITULO:b  				{:RESULT=b;:}
+	| TEXTO:b  					{:RESULT=b;:}
+	| IMAGEN:b  				{:RESULT=b;:}
+	| VIDEO:b  					{:RESULT=b;:}
+	| CATEGORIA:b  				{:RESULT=b;:}
+	| FECHA:b  					{:RESULT=b;:}
+	| TIPO:b  					{:RESULT=b;:}
+	| COLOR:b  					{:RESULT=b;:}
+	| LETRA:b  					{:RESULT=b;:}
+	| POSICION:b				{:RESULT=b;:}
+	| CAMPO:b 					{:RESULT=b;:}
+	;

@@ -1,0 +1,5 @@
+PORT=1234
+DIR=D:/Brais/Clase/TFG/Code/HttpDocs
+CATEGORIAS=Economia;Deportes;Cultura
+CATEGORIASIZE=5
+IPPOST=0:0:0:0:0:0:0:0-0:0:0:0:0:0:0:f;122.0.0.2-133.0.0.0

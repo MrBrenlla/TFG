@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+ 
+    <title>Ejemplo scroll de noticias</title>
+ 
+    <style type="text/css">
+        .scrollWrapper   {
+            width:33%;height:400px;
+            overflow:hidden;
+            border:2px solid #00f;
+            font-family:Arial;font-size:0.8em;
+			float:left;
+			z-index: -2;
+        }
+        .scrollTitle {
+            background-color:#00f;
+            color:#fff;
+            padding:5px;
+            font-weight:bold;
+            text-align:center;
+			z-index: 1;
+        }
+        .scroll    {
+            position:relative;
+            width:auto;
+            margin:1px;
+            z-index: 0;
+            padding:5px;
+        }
+		.container{overflow: hidden; width:100%;height:100%;}
+        .scroll .title  {font-weight:bold;margin-top:20px;}
+		a{
+			z-index: 20;
+		}
+		video{
+			z-index: 20;
+		}
+		
+    </style>
+	
+	
+	
+   
+</head>
+ 
+<body>
+ <center id="Body">
+ 
+<h1>Tablón de noticias</H1>
+</center>
+</body>
+
+ <script type="text/javascript" src="Concurrent.Thread.js"></script>
+ 
+ <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+ 
+ <script type="text/javascript">
+		var basescrollspeed=1;
+		var mouseOn = "";
+        var speedjump=30;
+        var startdelay= 1;
+        var topspace=-10;
+
+ 
+        /**
+         * Inicio del scroll
+         * Esta función es llamada en el body de la pagina.
+         * Tiene que recibir el id del scroll
+         */
+		 
+		 function sleep(milliseconds) {
+		  const date = Date.now();
+		  let currentDate = null;
+		  do {
+			currentDate = Date.now();
+		  } while (currentDate - date < milliseconds);
+		}
+		 
+        function scrollStart(IdName)
+        {
+            dataobj = document.getElementById(IdName);
+            // cogemos la altura maxima de la capa de las noticias
+            alturaNoticias = dataobj.offsetHeight;
+            // posicionamos la capa del scroll en su posicion inicial
+            var frameheight = document.getElementById("container"+IdName).clientHeight;
+			dataobj.style.top = frameheight + 'px';
+            while(true){
+				dataobj = document.getElementById(IdName);
+				// Restamos a la propiedad top de la capa el valor en pixeles
+				// establecido en la variable "scrollspeed", para hacer el
+				// movimiento hacia arriba.
+				if(IdName==mouseOn)scrollspeed = 0;
+				else scrollspeed = basescrollspeed;
+				dataobj.style.top = parseInt(dataobj.style.top) - scrollspeed + 'px';
+				// Si la capa ha sobrepasado la altura del area por donde se muestran
+				// las noticias ("alturaNoticias")
+				if (parseInt(dataobj.style.top) < dataobj.offsetHeight * (-1))
+				{
+					// Posicionamos la capa en la parte inferior del recuadro, para
+					// que simule que vienen las noticias de la parte inferior
+					var frameheight = document.getElementById("container"+IdName).clientHeight;
+					dataobj.style.top = frameheight + 'px';
+					fillTable(IdName);
+				}else{
+					sleep(speedjump);
+				}
+			}
+        }
+		
+		function add(json,categoria){
+			var scroll = document.getElementById(categoria);
+			var container = document.createElement("div");
+			var color=null;
+			var letra=null;
+			
+			if(json.Color!="null" && json.Color!="")color=json.Color;
+			else color="white";
+			if(json.Letra!="null" && json.Letra!="")letra=json.Letra;
+			else letra="verdana";
+			
+			if(json.Tipo=="Importante"){
+				var e = document.createElement("div");
+				e.innerHTML="Importante!!!!";
+				if(color!="red") e.setAttribute("style","color:red;font-family:"+letra+";");
+				else e.setAttribute("style","color:yellow;font-family:"+letra+";");
+				container.appendChild(e);
+			}
+			
+			if(categoria=="OUTRAS" && json.Categoria!="OUTRAS" && json.Categoria!="null" && json.Categoria!=""){
+				var e = document.createElement("I");
+				e.innerHTML=json.Categoria;
+				e.setAttribute("style","font-family:"+letra+";font-size:125%;color:Gray");
+				container.appendChild(e);
+			}
+			
+			if(json.Titulo!="null"){
+				var e = document.createElement("div");
+				e.innerHTML=json.Titulo;
+				e.setAttribute("style","font-family:"+letra+";font-size:200%;");
+				container.appendChild(e);
+			}
+			
+			if(json.Texto!="null"){
+				var e = document.createElement("div");
+				e.innerHTML=json.Texto;
+				e.setAttribute("style","font-family:"+letra+";");
+				container.appendChild(e);
+			}
+			
+			if(json.Video!="null" && json.Video!=""){
+				var e = document.createElement("video");
+				e.setAttribute("controls","true");
+				e.setAttribute("style","width:75%;");
+				var source = document.createElement("source");
+				source.setAttribute("src",json.Video);
+				container.appendChild(e);
+			}
+			
+			if(json.Imagen!="null" && (json.Video=="null" || json.Video=="")){
+				var e = document.createElement("img");
+				e.setAttribute("src",json.Imagen);
+				e.setAttribute("width","75%");
+				e.setAttribute("height","auto");
+				container.appendChild(e);
+				
+			}
+			
+			if(json.Autor!="null"){
+				var e = document.createElement("div");
+				e.innerHTML=json.Autor;
+				e.setAttribute("style","font-family:"+letra+";text-align:right;font-size:75%;");
+				container.appendChild(e);
+			}
+			if(json.Fecha!="null"){
+				var e = document.createElement("div");
+				e.innerHTML="("+json.Fecha+")";
+				e.setAttribute("style","font-family:"+letra+";text-align:right;font-size:65%;");
+				container.appendChild(e);
+			}
+				
+				if(color)container.setAttribute("style","background-color:"+color+";");
+				scroll.appendChild(container);
+				
+				var e = document.createElement("hr");
+				scroll.appendChild(e);
+		}
+		
+		function fillTable(categoria){
+			var scroll = document.getElementById(categoria);
+			var child = scroll.lastElementChild; 
+			while (child) {
+				scroll.removeChild(child);
+				child = scroll.lastElementChild;
+			}
+			
+			fetch("/Categoria/"+categoria)
+				.then(function (response) {
+					if (response.status != 200) {
+						if (response.status == 404) {
+							alert("Categorias list not found");
+						}
+						else if (response.status == 400) {
+							alert("Bad request : Please, back to HOME page and insert valid data");
+						}
+						else {
+							throw new Error(response.status);
+						}
+					}
+
+					return response.json();
+				})
+				.then(function (myJson) {
+					myJson.forEach(obj => {add(obj,categoria);});
+				})
+				.catch(function (error) {
+					console.log("Error: " + error);
+				});
+			
+		}
+		
+
+		function createTable(categoria){
+			var wrap = document.createElement("div");
+			wrap.setAttribute("class","scrollWrapper");
+			wrap.setAttribute("onMouseover","mouseOn=\""+categoria+"\"");
+			wrap.setAttribute("onMouseout","mouseOn=\"\"")
+			
+			var title = document.createElement("div");
+			title.setAttribute("class","scrollTitle");
+			title.innerHTML=categoria;
+			
+			var container = document.createElement("div");
+			container.setAttribute("id","container"+categoria);
+			container.setAttribute("class","container");
+			
+			var scroll = document.createElement("div");
+			scroll.setAttribute("id",categoria);
+			scroll.setAttribute("class","scroll");
+			
+			container.appendChild(scroll);
+			wrap.appendChild(title);
+			wrap.appendChild(container);
+			document.getElementById("Body").appendChild(wrap);
+			
+			fillTable(categoria);
+			
+			
+			Concurrent.Thread.create(scrollStart,categoria);
+		}
+		
+		function main(){
+			fetch("/Categoria")
+				.then(function (response) {
+					if (response.status != 200) {
+						if (response.status == 404) {
+							alert("Categorias list not found");
+						}
+						else if (response.status == 400) {
+							alert("Bad request : Please, back to HOME page and insert valid data");
+						}
+						else {
+							throw new Error(response.status);
+						}
+					}
+
+					return response.json();
+				})
+				.then(function (myJson) {
+					myJson.forEach(obj => {createTable(obj);});
+				})
+				.catch(function (error) {
+					console.log("Error: " + error);
+				});
+		}
+		
+		
+		
+		main();
+
+    </script>
+
+</html>
