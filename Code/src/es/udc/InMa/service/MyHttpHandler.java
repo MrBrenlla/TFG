@@ -77,7 +77,7 @@ public class MyHttpHandler implements HttpHandler{
 								if(l.size()>0) aux=aux+l.get(l.size()-1).toJson()+"\n]";
 								else aux=aux+"]";
 			            					
-								System.out.println(aux);
+								System.out.println("Consulta correcta");
 								
 					    	    exchange.sendResponseHeaders(200, aux.length());
 					    	

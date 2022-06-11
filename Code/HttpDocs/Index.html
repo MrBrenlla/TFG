@@ -37,6 +37,36 @@
 		video{
 			z-index: 20;
 		}
+		.parpadea {
+	  
+			animation-name: parpadeo;
+			animation-duration: 1s;
+			animation-timing-function: linear;
+			animation-iteration-count: infinite;
+
+			-webkit-animation-name:parpadeo;
+			-webkit-animation-duration: 1s;
+			-webkit-animation-timing-function: linear;
+			-webkit-animation-iteration-count: infinite;
+		}
+
+		@-moz-keyframes parpadeo{  
+			0% { opacity: 1.0; }
+			50% { opacity: 0.0; }
+			100% { opacity: 1.0; }
+		}
+
+		@-webkit-keyframes parpadeo {  
+			0% { opacity: 1.0; }
+			50% { opacity: 0.0; }
+			100% { opacity: 1.0; }
+		}
+
+		@keyframes parpadeo {  
+			0% { opacity: 1.0; }
+			50% { opacity: 0.0; }
+			100% { opacity: 1.0; }
+		}
 		
     </style>
 	
@@ -123,7 +153,8 @@
 			if(json.Tipo=="Importante"){
 				var e = document.createElement("div");
 				e.innerHTML="Importante!!!!";
-				if(color!="red") e.setAttribute("style","color:red;font-family:"+letra+";");
+				e.setAttribute("class","parpadea");
+				if(color!="red") e.setAttribute("style","color:red;font-family:"+letra+";font-size:145%;font-family:helvetica;font-weight:bold;");
 				else e.setAttribute("style","color:yellow;font-family:"+letra+";");
 				container.appendChild(e);
 			}
@@ -149,12 +180,16 @@
 				container.appendChild(e);
 			}
 			
+			var e = document.createElement("br");
+			container.appendChild(e);
+			
 			if(json.Video!="null" && json.Video!=""){
 				var e = document.createElement("video");
 				e.setAttribute("controls","true");
-				e.setAttribute("style","width:75%;");
+				e.setAttribute("width","75%;");
 				var source = document.createElement("source");
 				source.setAttribute("src",json.Video);
+				e.appendChild(source);
 				container.appendChild(e);
 			}
 			

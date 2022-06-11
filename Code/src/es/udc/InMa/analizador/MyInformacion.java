@@ -1,7 +1,9 @@
 package es.udc.InMa.analizador;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
+import org.apache.commons.text.StringEscapeUtils;
 
 import es.udc.InMa.service.Informacion;
 
@@ -15,18 +17,27 @@ public class MyInformacion implements Informacion{
 	protected MyInformacion(String autor, String titulo, String texto, String videoURL, String imagenURL, String categoria,
 			String fecha, String tipo, String color, String letra, String posicion) {
 
-		this.autor = autor;
-		this.titulo = titulo;
-		this.texto = texto;
-		this.videoURL = videoURL;
-		this.imagenURL = imagenURL;
-		if(categoria!=null)this.categoria = categoria.toUpperCase();
+		if(autor==null)this.autor = null;
+		else this.autor = new String(autor.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
+		if(titulo==null)this.titulo = null;
+		else this.titulo = new String(titulo.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);;
+		if(texto==null)this.texto = null;
+		else this.texto = new String(texto.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);;
+		if(videoURL==null)this.videoURL = null;
+		else this.videoURL = new String(videoURL.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);;
+		if(imagenURL==null)this.imagenURL = null;
+		else this.imagenURL = new String(imagenURL.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);;
+		if(categoria!=null)this.categoria = new String(categoria.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8).toUpperCase();
 		else this.categoria="";
 		
-		this.tipo = tipo;
-		this.color = color;
-		this.posicion = posicion;
-		this.letra = letra;
+		if(tipo==null)this.tipo = null;
+		else this.tipo = new String(tipo.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);;
+		if(color==null)this.color = null;
+		else this.color = new String(color.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);;
+		if(posicion==null)this.posicion = null;
+		else this.posicion = new String(posicion.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);;
+		if(letra==null)this.letra = null;
+		else this.letra = new String(letra.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);;
 		
 		try {
 			this.fecha = LocalDateTime.parse(fecha, DateTimeFormatter.ofPattern("dd-MM-yyyy kk:mm:ss"));
@@ -66,21 +77,34 @@ public class MyInformacion implements Informacion{
 		return target.fecha.compareTo(this.fecha);
 	}
 	
+	private String fix(String s) {
+		if(s!=null) s=StringEscapeUtils.escapeJson(s).replace("\\n", "<br>");
+		return s;
+	}
+	
 	@Override
 	public String toJson() {
-		return "{\n" +
-				    "\"Autor\":\""+autor+"\",\n"+
-				    "\"Titulo\":\""+titulo+"\",\n"+
-				    "\"Texto\":\""+texto+"\",\n"+
-				    "\"Video\":\""+videoURL+"\",\n"+
-				    "\"Imagen\":\""+imagenURL+"\",\n"+
-				    "\"Categoria\":\""+categoria+"\",\n"+
-				    "\"Fecha\":\""+fecha.format(DateTimeFormatter.ofPattern("dd-MM-yyyy kk:mm:ss"))+"\",\n"+
-				    "\"Tipo\":\""+tipo+"\",\n"+
-				    "\"Color\":\""+color+"\",\n"+
-				    "\"Letra\":\""+letra+"\",\n"+
-				    "\"Posicion\":\""+posicion+"\"\n"+
-				"}";
+		
+		try {
+			
+			return "{\n" +
+					    "\"Autor\":\""+fix(autor)+"\",\n"+
+					    "\"Titulo\":\""+fix(titulo)+"\",\n"+
+					    "\"Texto\":\""+fix(texto)+"\",\n"+
+					    "\"Video\":\""+StringEscapeUtils.escapeJson(videoURL)+"\",\n"+
+					    "\"Imagen\":\""+StringEscapeUtils.escapeJson(imagenURL)+"\",\n"+
+					    "\"Categoria\":\""+StringEscapeUtils.escapeJson(categoria)+"\",\n"+
+					    "\"Fecha\":\""+StringEscapeUtils.escapeJson(fecha.format(DateTimeFormatter.ofPattern("dd-MM-yyyy kk:mm:ss")))+"\",\n"+
+					    "\"Tipo\":\""+StringEscapeUtils.escapeJson(tipo)+"\",\n"+
+					    "\"Color\":\""+StringEscapeUtils.escapeJson(color)+"\",\n"+
+					    "\"Letra\":\""+StringEscapeUtils.escapeJson(letra)+"\",\n"+
+					    "\"Posicion\":\""+StringEscapeUtils.escapeJson(posicion)+"\"\n"+
+					"}";
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return "";
 	}
 
 	@Override
