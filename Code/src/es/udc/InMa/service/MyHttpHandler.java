@@ -35,7 +35,7 @@ public class MyHttpHandler implements HttpHandler{
 
 	}
 
-
+	//Proceso de resposta de unha petición GET
 	private void handleGetRequest(HttpExchange exchange) throws IOException {
 		
 		            String requestParamValue = exchange. getRequestURI().toString();
@@ -50,6 +50,7 @@ public class MyHttpHandler implements HttpHandler{
 		            	Manager manager=Manager.getManager();
 		            	String cat = requestParamValue.replaceFirst("/CATEGORIA/", "");
 		            	
+		            	//Se se recive "/categoria" ou /categoria/" (indiferente maiusculas ou minusculas) devolvese un Json co nome de todas as categorías.
 		            	if(cat.equals("") || cat.equals("/CATEGORIA")) {
 		            			OutputStream outputStream = exchange.getResponseBody(); 
 		            			
@@ -62,6 +63,8 @@ public class MyHttpHandler implements HttpHandler{
 					    	    outputStream.flush();
 					    	    
 					    	    outputStream.close();
+					    	    
+					    //Se se recive "/categoria/X" devolvese o Json con toda a información da categoría "X" se esxiste
 		            	}else {
 		            		List<Informacion> l = manager.get(cat);
 			            	if(l==null) {
@@ -88,7 +91,7 @@ public class MyHttpHandler implements HttpHandler{
 					    	    outputStream.close();
 			            	}
 		            	}
-		            	
+		            //En outro caso devolvese o arquivo especificado	
 		            }else{
 		            	if(requestParamValue.endsWith(".mp4"))exchange.getResponseHeaders().set("Content-Type", "video/mp4");
 		            	
@@ -113,6 +116,7 @@ public class MyHttpHandler implements HttpHandler{
 
 	}
 	
+	//Proceso de resposta de unha petición POST
 	private void handlePostRequest(HttpExchange exchange) throws IOException {
 		
 		String ip = exchange.getRemoteAddress().getAddress().getHostAddress();
@@ -121,6 +125,7 @@ public class MyHttpHandler implements HttpHandler{
 		if(! comprobarIP(ip)) {
 			System.out.println("Ip "+ip+" sin permisos intentou facer POST");
 			exchange.sendResponseHeaders(403,-1);
+			return;
 		}
 		
 		InputStream input = exchange.getRequestBody();

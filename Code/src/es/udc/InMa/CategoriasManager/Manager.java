@@ -28,17 +28,17 @@ public class Manager {
 	
 	public static Manager getManager() {
 		if(m==null) m=new Manager();
-		
 		return m;
 	}
 	
+	//Engade a información á categoría correspondente ou a "OUTRAS" se a cetegoría non existe
 	public void add(Informacion info) {
 		Categoria c = categorias.get(info.getCategoria().toUpperCase());
 		if(c==null) c = categorias.get("OUTRAS");
 		c.add(info);
 	}
 	
-	
+	//Devolve a lista coa información de unha categoría
 	public List<Informacion> get(String categoria) {
 		System.out.println("Buscando categoria "+categoria);
 		Categoria c = categorias.get(categoria);
@@ -46,6 +46,7 @@ public class Manager {
 		return c.getList();
 	}
 	
+	//Devolvese un Json co nome de todas as categorías
 	public String getCategorias() {
 		String aux = "[\n";
 		String[] cat = p.getProperty("CATEGORIAS").toUpperCase().split(";");

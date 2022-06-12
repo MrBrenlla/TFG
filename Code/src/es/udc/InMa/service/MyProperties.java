@@ -11,20 +11,19 @@ import es.udc.InMa.analizador.parser;
 
 public class MyProperties {
 
-	private static Properties p=null;
-	
+	//Devolve o properties do documento Properties.txt
 	public static Properties getProperties() {
-		if(p==null) {
+			Properties p=new Properties();
 			try {
-				p=new Properties();
-				p.load(new FileInputStream(new File("./Properties.txt"))); 
+				p.load(new FileInputStream(new File("./Properties.txt")));
 			} catch (IOException e) {
-			}
-		}
-		
+				e.printStackTrace();
+			} 
+
 		return p;
 	}
 	
+	//Devolvese o parser
 	@SuppressWarnings("deprecation")
 	public static java_cup.runtime.lr_parser getParser(Reader r){
 		return new parser(new Lexer(r));
