@@ -2,6 +2,9 @@ package es.udc.InMa.service;
 
 public interface Informacion extends Comparable<Object>{
 	
+	//Debese inplementar o método compareTo(Objet o) da interfaz Comparable<Object> de tal forma que ordene a información de maior a menor prioridade.
+	
+	
 	//Devolve a categoría da información
 	public String getCategoria();
 	
