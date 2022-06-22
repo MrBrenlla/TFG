@@ -10,10 +10,10 @@ import es.udc.InMa.service.MyProperties;
 public class Categoria {
 
 	private ArrayList<Informacion> list=new ArrayList<>();
-	private Properties p = MyProperties.getProperties();
 	
 	//Engade unha información á lista, ordenaa e elimina os excedentes
 	public void add(Informacion info) {
+		Properties p = MyProperties.getProperties();
 		System.out.println("Engdindo en "+info.getCategoria());
 		int maxSize=Integer.parseInt(p.getProperty("CATEGORIASIZE"));
 		list.add(info);

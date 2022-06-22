@@ -18,7 +18,7 @@ import java_cup.runtime.Symbol;
 
 BLANCOS=[ \r\t\n]+
 TEXTOBASICO=[^<]+
-CAMPO=[a-zA-Z][^\<\n\r\t\"/]*
+CAMPO=[a-zA-Z][^ \<\n\r\t\"/]*
 CABECERA=xml (version=\"[0-9]+\.[0-9]\" encoding=\"[^ \?\r\t><]\")|(encoding=\"[^ \?\r\t><]\" version=\"[0-9]+\.[0-9]\")
 %%
 

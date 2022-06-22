@@ -8,6 +8,7 @@ import java.util.Properties;
 
 import es.udc.InMa.analizador.Lexer;
 import es.udc.InMa.analizador.parser;
+import java_cup.runtime.lr_parser;
 
 public class MyProperties {
 
@@ -25,7 +26,7 @@ public class MyProperties {
 	
 	//Devolvese o parser
 	@SuppressWarnings("deprecation")
-	public static java_cup.runtime.lr_parser getParser(Reader r){
+	public static lr_parser getParser(Reader r){
 		return new parser(new Lexer(r));
 	}
 	

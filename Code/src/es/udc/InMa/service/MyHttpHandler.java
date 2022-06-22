@@ -29,7 +29,19 @@ public class MyHttpHandler implements HttpHandler{
 
 			handlePostRequest(exchange);        
 
-		}  
+		} else {
+			String aux=exchange.getRequestMethod()+" non soportado";
+			System.out.println(aux);
+			exchange.sendResponseHeaders(405,aux.length());
+			
+			OutputStream outputStream = exchange.getResponseBody();
+			
+			outputStream.write(aux.getBytes());
+	    	
+    	    outputStream.flush();
+    	    
+    	    outputStream.close();
+		}
 		
 		
 
@@ -66,19 +78,12 @@ public class MyHttpHandler implements HttpHandler{
 					    	    
 					    //Se se recive "/categoria/X" devolvese o Json con toda a información da categoría "X" se esxiste
 		            	}else {
-		            		List<Informacion> l = manager.get(cat);
-			            	if(l==null) {
+		            		String aux = manager.get(cat);
+			            	if(aux==null) {
 			            		System.out.println("GET categoría inexistente");
 			        			exchange.sendResponseHeaders(404,-1);
 			            	} else {
 			            		OutputStream outputStream = exchange.getResponseBody(); 
-			            		
-			            		String aux="[\n";
-								for(int i=0; i<l.size()-1;i++){
-			            			aux=aux+l.get(i).toJson()+",\n";
-			            		}
-								if(l.size()>0) aux=aux+l.get(l.size()-1).toJson()+"\n]";
-								else aux=aux+"]";
 			            					
 								System.out.println("Consulta correcta");
 								
@@ -93,21 +98,28 @@ public class MyHttpHandler implements HttpHandler{
 		            	}
 		            //En outro caso devolvese o arquivo especificado	
 		            }else{
-		            	if(requestParamValue.endsWith(".mp4"))exchange.getResponseHeaders().set("Content-Type", "video/mp4");
-		            	
+		        
 		            	Properties p = MyProperties.getProperties();
-			        	
-			    	    OutputStream outputStream = exchange.getResponseBody();
 			    	
 			    	    File f = new File(p.getProperty("DIR")+requestParamValue);
 			    	    
-			    	    exchange.sendResponseHeaders(200, f.length());
-			    	
-			    	    outputStream.write(Files.readAllBytes(f.toPath()));
-			    	
-			    	    outputStream.flush();
+			    	    if(f.exists()) {
+			    	    	if(requestParamValue.endsWith(".mp4"))exchange.getResponseHeaders().set("Content-Type", "video/mp4");
+			            	
+			    	    	OutputStream outputStream = exchange.getResponseBody();
+			    	    	
+			    	    	exchange.sendResponseHeaders(200, f.length());
+					    	
+				    	    outputStream.write(Files.readAllBytes(f.toPath()));
+				    	
+				    	    outputStream.flush();
+				    	    
+				    	    outputStream.close();
+			    	    }else {
+			    	    	exchange.sendResponseHeaders(404, -1);
+			    	    }
 			    	    
-			    	    outputStream.close();
+			    	    
 		            	
 		            }
 		            

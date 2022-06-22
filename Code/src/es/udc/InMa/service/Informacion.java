@@ -8,7 +8,7 @@ public interface Informacion extends Comparable<Object>{
 	//Devolve a categoría da información
 	public String getCategoria();
 	
-	//Devolve o String do Json que representa esa informacioón
+	//Devolve o String do Json que representa esa información
 	public String toJson();
 	
 	//Devolvese true se houbo algún erro recoñecible durante o parse 

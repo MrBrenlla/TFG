@@ -1,5 +1,4 @@
 package es.udc.InMa.analizador;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -114,7 +113,6 @@ public class MyInformacion implements Informacion{
 
 	@Override
 	public String error() {
-		// TODO Auto-generated method stub
 		return errorMessage;
 	}
 }
