@@ -21,6 +21,7 @@ parser code
 	private String tipo = null;
 	private String color = null;
 	private String letra = null;
+	private String colorLetra = null;
 	private String posicion = null;
 	private String erro = null;
 	  
@@ -37,7 +38,7 @@ parser code
     
 :} 
 
-terminal String AUTOR,TITULO,TEXTO,IMAGEN,VIDEO,CATEGORIA,FECHA,TIPO,COLOR,LETRA,POSICION,TEXTOBASICO,CAMPO,FINCAMPO;
+terminal String AUTOR,TITULO,TEXTO,IMAGEN,VIDEO,CATEGORIA,FECHA,TIPO,COLOR,LETRA,COLORLETRA,POSICION,TEXTOBASICO,CAMPO,FINCAMPO;
 
 non terminal linea;
 non terminal String info;
@@ -49,7 +50,7 @@ start with ini;
 
 ini::=CAMPO:a body:b 	{:if(!a.equals(b)) RESULT = new MyInformacion("O campo <"+a+" non coresponde co peche </"+b);
 						 if(erro!=null) RESULT = new MyInformacion(erro);
-						 else RESULT = new MyInformacion(autor, titulo, texto, video, imagen, categoria, fecha, tipo, color, letra, posicion);
+						 else RESULT = new MyInformacion(autor, titulo, texto, video, imagen, categoria, fecha, tipo, color, letra, colorLetra, posicion);
 						:}
 ;
 
@@ -73,6 +74,7 @@ info ::=
 	| TIPO:b TEXTOBASICO:a 		{:tipo=a;RESULT=b;:}
 	| COLOR:b TEXTOBASICO:a 	{:color=a;RESULT=b;:}
 	| LETRA:b TEXTOBASICO:a 	{:letra=a;RESULT=b;:}
+	| COLORLETRA:b TEXTOBASICO:a{:colorLetra=a;RESULT=b;:}
 	| POSICION:b TEXTOBASICO:a 	{:posicion=a;RESULT=b;:}
 	| CAMPO:b TEXTOBASICO 		{:RESULT=b;:}
 	| AUTOR:b  					{:RESULT=b;:}
@@ -85,6 +87,7 @@ info ::=
 	| TIPO:b  					{:RESULT=b;:}
 	| COLOR:b  					{:RESULT=b;:}
 	| LETRA:b  					{:RESULT=b;:}
+	| COLORLETRA:b  			{:RESULT=b;:}
 	| POSICION:b				{:RESULT=b;:}
 	| CAMPO:b 					{:RESULT=b;:}
 	;

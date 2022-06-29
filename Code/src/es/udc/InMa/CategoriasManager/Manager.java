@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
-
 import es.udc.InMa.service.Informacion;
 import es.udc.InMa.service.MyProperties;
 

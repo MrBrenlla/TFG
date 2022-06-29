@@ -8,19 +8,20 @@ package es.udc.InMa.analizador;
 /** CUP generated class containing symbol constants. */
 public class sym {
   /* terminals */
-  public static final int POSICION = 12;
+  public static final int POSICION = 13;
   public static final int COLOR = 10;
   public static final int TITULO = 3;
   public static final int TEXTO = 4;
+  public static final int COLORLETRA = 12;
   public static final int LETRA = 11;
-  public static final int TEXTOBASICO = 13;
+  public static final int TEXTOBASICO = 14;
   public static final int AUTOR = 2;
   public static final int EOF = 0;
   public static final int FECHA = 8;
-  public static final int CAMPO = 14;
+  public static final int CAMPO = 15;
   public static final int TIPO = 9;
   public static final int error = 1;
-  public static final int FINCAMPO = 15;
+  public static final int FINCAMPO = 16;
   public static final int VIDEO = 6;
   public static final int IMAGEN = 5;
   public static final int CATEGORIA = 7;
@@ -37,6 +38,7 @@ public class sym {
   "TIPO",
   "COLOR",
   "LETRA",
+  "COLORLETRA",
   "POSICION",
   "TEXTOBASICO",
   "CAMPO",

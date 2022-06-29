@@ -35,6 +35,7 @@ CABECERA=xml (version=\"[0-9]+\.[0-9]\" encoding=\"[^ \?\r\t><]\")|(encoding=\"[
 \<Tipo\> {return new Symbol(sym.TIPO, yytext().split("<")[1]);} 
 \<Color\> {return new Symbol(sym.COLOR, yytext().split("<")[1]);} 
 \<Letra\> {return new Symbol(sym.LETRA, yytext().split("<")[1]);} 
+\<ColorLetra\> {return new Symbol(sym.COLORLETRA, yytext().split("<")[1]);} 
 \<Posicion\> {return new Symbol(sym.POSICION, yytext().split("<")[1]);} 
 \<{CAMPO}\> {return new Symbol(sym.CAMPO, yytext().split("<")[1]);}
 

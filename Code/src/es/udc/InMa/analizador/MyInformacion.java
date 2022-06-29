@@ -8,13 +8,13 @@ import es.udc.InMa.service.Informacion;
 
 public class MyInformacion implements Informacion{
 
-	private String autor,titulo,texto,videoURL,imagenURL,categoria,tipo,color,posicion,letra,errorMessage;
+	private String autor,titulo,texto,videoURL,imagenURL,categoria,tipo,color,posicion,letra,colorLetra,errorMessage;
 	private LocalDateTime fecha;
 	private boolean error;
 	
 
 	protected MyInformacion(String autor, String titulo, String texto, String videoURL, String imagenURL, String categoria,
-			String fecha, String tipo, String color, String letra, String posicion) {
+			String fecha, String tipo, String color, String letra, String colorLetra, String posicion) {
 
 		if(autor==null)this.autor = null;
 		else this.autor = new String(autor.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
@@ -37,6 +37,8 @@ public class MyInformacion implements Informacion{
 		else this.posicion = new String(posicion.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);;
 		if(letra==null)this.letra = null;
 		else this.letra = new String(letra.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);;
+		if(colorLetra==null)this.colorLetra = null;
+		else this.colorLetra = new String(colorLetra.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);;
 		
 		try {
 			this.fecha = LocalDateTime.parse(fecha, DateTimeFormatter.ofPattern("dd-MM-yyyy kk:mm:ss"));
@@ -97,6 +99,7 @@ public class MyInformacion implements Informacion{
 					    "\"Tipo\":\""+StringEscapeUtils.escapeJson(tipo)+"\",\n"+
 					    "\"Color\":\""+StringEscapeUtils.escapeJson(color)+"\",\n"+
 					    "\"Letra\":\""+StringEscapeUtils.escapeJson(letra)+"\",\n"+
+					    "\"ColorLetra\":\""+StringEscapeUtils.escapeJson(colorLetra)+"\",\n"+
 					    "\"Posicion\":\""+StringEscapeUtils.escapeJson(posicion)+"\"\n"+
 					"}";
 		} catch (Exception e) {

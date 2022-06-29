@@ -7,7 +7,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.nio.file.Files;
-import java.util.List;
 import java.util.Properties;
 
 import com.sun.net.httpserver.HttpExchange;
@@ -173,7 +172,7 @@ public class MyHttpHandler implements HttpHandler{
 				Manager m = Manager.getManager();
 				m.add(aux);
 				erroText="Engadido correctamente";
-				exchange.sendResponseHeaders(200,erroText.length());
+				exchange.sendResponseHeaders(201,erroText.length());
 			}
 		} catch (Exception e) {
 			System.out.println("Error de sintaxis");

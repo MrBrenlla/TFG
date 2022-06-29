@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title></title>
+	<style type="text/css">
+		video {
+			object-fit: contain;
+			width:100%;
+			height:100%;
+		}
+		.banner1{
+			padding-left:1%;
+			font-size:3vh; 
+			position: absolute;
+			z-index: 200;
+			background: #66ffff; 
+			border-left: 5px solid #3366ff; 
+			width: 40%;
+		}
+		.banner2{
+			padding-left:1%;
+			font-size:4vh;
+			position: absolute;
+			bottom: 0px;
+			z-index: 200;
+			background: #66ffff; 
+			font-weight: bold; 
+			border-left: 5px solid #3366ff; 
+			width: 60%;
+		}
+		.containerScroll{
+			height:4vh;
+			background-color: #3366ff;
+			font-size:2vh;
+			display: flex;
+			align-items: center;
+			overflow: hidden
+		}
+		.Scroll{
+			white-space:nowrap;
+			position:relative;
+		}
+</style>
+  </head>
+  <body style="background: #000000;">
+    <div style="height: 94vh; width: 100%; position: relative">
+		<p id="categoria" class="banner1">Categoría</p>
+		<div id="mainContainer" style="height:94vh">
+			
+		</div>
+		<p id="titulo" class="banner2">Título</p>
+    </div>
+    <div id="containerScroll" class="containerScroll"> 
+		<div id="Scroll" class="Scroll">
+		
+		</div>
+	</div>
+  </body>
+   <script type="text/javascript" src="Concurrent.Thread.js"></script>
+ 
+ <script type="text/javascript">
+ 
+ 
+ // -----------------------------SCROLL--------------------------------
+ 
+ 
+		var scrollspeed=1;
+        var speedjump=30;
+        var startdelay= 1;
+        var topspace=-10;
+
+		 
+		function sleep(milliseconds) {
+		  const date = Date.now();
+		  let currentDate = null;
+		  do {
+			currentDate = Date.now();
+		  } while (currentDate - date < milliseconds);
+		}
+		 
+        function scrollStart(IdName){
+			fillScroll();
+			
+            dataobj = document.getElementById(IdName);
+
+            var frameWidth = document.getElementById("container"+IdName).clientWidth;
+			dataobj.style.left = frameWidth + 'px';
+            while(true){
+
+				if(dataobj.lastElementChild)dataobj.style.left = parseInt(dataobj.style.left) - scrollspeed + 'px';
+
+				if (parseInt(dataobj.style.left) < dataobj.offsetWidth * (-1))
+				{
+
+					var frameWidth = document.getElementById("container"+IdName).clientWidth;
+					dataobj.style.left = frameWidth + 'px';
+					fillScroll();
+				}else{
+					sleep(speedjump);
+				}
+			}
+        }
+		
+		function addScroll(json){
+			if(json.Posicion=="Central" || json.Titulo=="null" || json.Titulo=="") return;
+		
+			var scroll = document.getElementById("Scroll");
+			var color=null;
+			var colorLetra=null;
+			
+			if(json.Color!="null" && json.Color!="")color=json.Color;
+			if(json.ColorLetra!="null" && json.ColorLetra!="")colorLetra=json.ColorLetra;
+			
+			var e = document.createElement("span");
+			if(json.Categoria!="null" && json.Categoria!="")e.innerHTML=json.Categoria+":";
+			else e.innerHTML="OUTRAS:";
+			e.setAttribute("style","background-color:"+color+";font-weight: bold; color:"+colorLetra+";");
+			scroll.appendChild(e);
+			
+			var e = document.createElement("span");
+			e.innerHTML=" "+json.Titulo+" ";
+			scroll.appendChild(e);	
+				
+		}
+		
+		function fill(categoria){
+			fetch("/Categoria/"+categoria)
+				.then(function (response) {
+					if (response.status != 200) {
+						if (response.status == 404) {
+							alert("Categorias list not found");
+						}
+						else if (response.status == 400) {
+							alert("Bad request : Please, back to HOME page and insert valid data");
+						}
+						else {
+							throw new Error(response.status);
+						}
+					}
+
+					return response.json();
+				})
+				.then(function (myJson) {
+					myJson.forEach(obj => {addScroll(obj);});
+				})
+				.catch(function (error) {
+					console.log("Error: " + error);
+				});
+			
+		}
+		
+		function fillScroll(){
+			var scroll = document.getElementById("Scroll");
+			var child = scroll.lastElementChild; 
+			while (child) {
+				scroll.removeChild(child);
+				child = scroll.lastElementChild;
+			}
+			fetch("/Categoria")
+				.then(function (response) {
+					if (response.status != 200) {
+						if (response.status == 404) {
+							alert("Categorias list not found");
+						}
+						else if (response.status == 400) {
+							alert("Bad request : Please, back to HOME page and insert valid data");
+						}
+						else {
+							throw new Error(response.status);
+						}
+					}
+
+					return response.json();
+				})
+				.then(function (myJson) {
+					myJson.forEach(obj => {fill(obj);});
+				})
+				.catch(function (error) {
+					console.log("Error: " + error);
+				});
+		}
+	
+
+
+
+//----------------------------ZONA_CENTRAL-----------------------------
+	
+		var categorias=null;
+		var nCat=0;
+		
+		var noticias=null;
+		var nNoticias=0;
+		
+		var title = document.getElementById("titulo");
+		var categor = document.getElementById("categoria");
+		
+		var aux=0;
+		
+		async function solicitarCategorias(){
+			await fetch("/Categoria")
+					.then(function (response) {
+						if (response.status != 200) {
+							if (response.status == 404) {
+								alert("Categorias list not found");
+							}
+							else if (response.status == 400) {
+								alert("Bad request : Please, back to HOME page and insert valid data");
+							}
+							else {
+								throw new Error(response.status);
+							}
+						}
+
+						return response.json();
+					})
+					.then(function (myJson) {
+						categorias=myJson; nCat=0;
+					})
+					.catch(function (error) {
+						console.log("Error: " + error);
+					});
+		}
+		
+		async function solicitarCategoria(){
+			var cat = null;
+			if(nCat >= categorias.length) nCat=0;		
+			cat=categorias[nCat];
+			nCat=nCat+1;
+			await fetch("/Categoria/"+cat)
+					.then(function (response) {
+						if (response.status != 200) {
+							if (response.status == 404) {
+								alert("Categoria not found");
+							}
+							else if (response.status == 400) {
+								alert("Bad request : Please, back to HOME page and insert valid data");
+							}
+							else {
+								throw new Error(response.status);
+							}
+						}
+
+						return response.json();
+					})
+					.then(async function (myJson) {
+						noticias=myJson; nNoticias=0;
+					})
+					.catch(function (error) {
+						console.log("Error: " + error);
+					});
+		}
+
+		async function recursos(){
+			while(nNoticias >= noticias.length) await solicitarCategoria(); 
+		}
+		
+		function showVideo(json){
+			var container = document.getElementById("mainContainer");
+			
+			var e = document.createElement("video");
+			var source = document.createElement("source");
+			source.setAttribute("src",json.Video);
+			e.appendChild(source);
+			
+			aux=true;
+			
+			e.addEventListener('ended',function(e){
+				central();
+			},false);
+			
+			container.appendChild(e);
+
+			e.play()
+		}
+		
+		async function centralStart(){
+			await solicitarCategorias();
+			await solicitarCategoria();
+			central();
+		}
+		
+		async function central(){
+			await recursos()
+			var noti=noticias[nNoticias];
+			nNoticias=nNoticias+1;
+				
+			if(noti.Posicion=="Central"){
+				
+				if(noti.Categoria!="null" && noti.Categoria!="")categor.innerHTML=noti.Categoria;
+				else categor.innerHTML="OUTRAS";
+						
+				if(noti.Titulo!="null")title.innerHTML=noti.Titulo;
+				else title.innerHTML="";
+					
+				var scroll = document.getElementById("mainContainer");
+				var child = scroll.lastElementChild; 
+				while (child) {
+					scroll.removeChild(child);
+					child = scroll.lastElementChild;
+				}					
+				if(noti.Video!="null" && noti.Video!="") showVideo(noti);
+				else{ 
+						setTimeout(central, 5000);
+					}					
+			}else central();
+		}
+		
+		function add(json,categoria){
+			var scroll = document.getElementById(categoria);
+			var container = document.createElement("div");
+			var color=null;
+			var colorLetra=null;
+			var letra=null;
+			
+			if(json.Color!="null" && json.Color!="")color=json.Color;
+			else color="white";
+			if(json.ColorLetra!="null" && json.ColorLetra!="")ColorLetra=json.ColorLetra;
+			else ColorLetra="black";
+			if(json.Letra!="null" && json.Letra!="")letra=json.Letra;
+			else letra="verdana";
+			
+			if(json.Tipo=="Importante"){
+				var e = document.createElement("div");
+				e.innerHTML="Importante!!!!";
+				e.setAttribute("class","parpadea");
+				if(color!="red") e.setAttribute("style","color:red;font-family:"+letra+";font-size:145%;font-family:helvetica;font-weight:bold;");
+				else e.setAttribute("style","color:yellow;font-family:"+letra+";");
+				container.appendChild(e);
+			}
+			
+			if(categoria=="OUTRAS" && json.Categoria!="OUTRAS" && json.Categoria!="null" && json.Categoria!=""){
+				var e = document.createElement("I");
+				e.innerHTML=json.Categoria;
+				e.setAttribute("style","font-family:"+letra+";font-size:125%;color:Gray");
+				container.appendChild(e);
+			}
+			
+			if(json.Titulo!="null"){
+				var e = document.createElement("div");
+				e.innerHTML=json.Titulo;
+				e.setAttribute("style","padding-right:1%;padding-left:1%;font-family:"+letra+";font-size:200%;color:"+ColorLetra);
+				container.appendChild(e);
+			}
+			
+			if(json.Texto!="null"){
+				var e = document.createElement("div");
+				e.innerHTML=json.Texto;
+				e.setAttribute("style","padding-right:1%;padding-left:1%;font-family:"+letra+";color:"+ColorLetra);
+				container.appendChild(e);
+			}
+			
+			var e = document.createElement("br");
+			container.appendChild(e);
+			
+			if(json.Video!="null" && json.Video!=""){
+				var e = document.createElement("video");
+				e.setAttribute("controls","true");
+				e.setAttribute("width","75%;");
+				var source = document.createElement("source");
+				source.setAttribute("src",json.Video);
+				e.appendChild(source);
+				container.appendChild(e);
+			}
+			
+			if(json.Imagen!="null" && (json.Video=="null" || json.Video=="")){
+				var e = document.createElement("img");
+				e.setAttribute("src",json.Imagen);
+				e.setAttribute("width","75%");
+				e.setAttribute("height","auto");
+				container.appendChild(e);
+				
+			}
+			
+			if(json.Autor!="null"){
+				var e = document.createElement("div");
+				e.innerHTML=json.Autor;
+				e.setAttribute("style","font-family:"+letra+";text-align:right;font-size:75%;padding-right:1%;");
+				container.appendChild(e);
+			}
+			if(json.Fecha!="null"){
+				var e = document.createElement("div");
+				e.innerHTML="("+json.Fecha+")";
+				e.setAttribute("style","font-family:"+letra+";text-align:right;font-size:65%;padding-right:1%;");
+				container.appendChild(e);
+			}
+				var e = document.createElement("hr");
+				container.appendChild(e);
+				
+				if(color)container.setAttribute("style","background-color:"+color+";");
+				scroll.appendChild(container);
+				
+				
+		}
+		
+		
+		
+		
+		Concurrent.Thread.create(scrollStart,"Scroll");
+		//Concurrent.Thread.create(centralStart);
+		centralStart();
+
+    </script>
+</html>

@@ -12,7 +12,7 @@ import java_cup.runtime.Symbol;
 
 
 // See https://github.com/jflex-de/jflex/issues/222
-@SuppressWarnings("FallThrough")
+@SuppressWarnings("fallthrough")
 public class Lexer implements java_cup.runtime.Scanner {
 
   /** This character denotes the end of file. */
@@ -408,6 +408,7 @@ public class Lexer implements java_cup.runtime.Scanner {
   private int yyline;
 
   /** Number of characters from the last newline up to the start of the matched text. */
+  @SuppressWarnings("unused")
   private int yycolumn;
 
   /** Number of characters up to the start of the matched text. */
