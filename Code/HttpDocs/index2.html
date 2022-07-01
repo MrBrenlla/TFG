@@ -6,8 +6,13 @@
 	<style type="text/css">
 		video {
 			object-fit: contain;
-			width:100%;
-			height:100%;
+			width:100vw;
+			height:94vh;
+		}
+		img {
+			object-fit: contain;
+			width:40%;
+			height:auto;
 		}
 		.banner1{
 			padding-left:1%;
@@ -41,12 +46,21 @@
 			white-space:nowrap;
 			position:relative;
 		}
+		.bigContainer{
+			display: flex;
+			align-items: center;
+		}
+		.mainContainer{
+			height:94vh;
+			display:flex;
+			align-items: center;
+		}
 </style>
   </head>
   <body style="background: #000000;">
     <div style="height: 94vh; width: 100%; position: relative">
 		<p id="categoria" class="banner1">Categoría</p>
-		<div id="mainContainer" style="height:94vh">
+		<div id="mainContainer" class="mainContainer">
 			
 		</div>
 		<p id="titulo" class="banner2">Título</p>
@@ -195,7 +209,7 @@
 		var title = document.getElementById("titulo");
 		var categor = document.getElementById("categoria");
 		
-		var aux=0;
+		var time = 20
 		
 		async function solicitarCategorias(){
 			await fetch("/Categoria")
@@ -257,13 +271,13 @@
 		
 		function showVideo(json){
 			var container = document.getElementById("mainContainer");
+			container.setAttribute("style","background-color:none;");
 			
 			var e = document.createElement("video");
 			var source = document.createElement("source");
 			source.setAttribute("src",json.Video);
 			e.appendChild(source);
 			
-			aux=true;
 			
 			e.addEventListener('ended',function(e){
 				central();
@@ -272,6 +286,63 @@
 			container.appendChild(e);
 
 			e.play()
+		}
+		
+		function showText(json){
+			var mainContainer = document.getElementById("mainContainer");
+			
+			var bigContainer = document.createElement("div");
+			bigContainer.setAttribute("class","bigContainer");
+			
+			var container = document.createElement("div");
+			container.setAttribute("style","float:none;width:50vw;");
+			
+			
+			var color=null;
+			var colorLetra=null;
+			
+			if(json.Color!="null" && json.Color!="")color=json.Color;
+			else color="white";
+			if(json.ColorLetra!="null" && json.ColorLetra!="")ColorLetra=json.ColorLetra;
+			else ColorLetra="black";
+			
+			if(json.Texto!="null"){
+				var e = document.createElement("div");
+				e.innerHTML=json.Texto;
+				e.setAttribute("style","font-size:2.5vh;padding-right:2%;padding-left:2%;color:"+ColorLetra);
+				container.appendChild(e);
+			}
+			
+			var e = document.createElement("br");
+			container.appendChild(e);
+			
+			if(json.Fecha!="null"){
+				var e = document.createElement("div");
+				e.innerHTML="("+json.Fecha+")  ";
+				e.setAttribute("style","width:45vw;text-align:right;font-size:1.5vh;padding-right:2%;");
+				container.appendChild(e);
+			}
+			
+			if(json.Autor!="null"){
+				var e = document.createElement("div");
+				e.innerHTML=json.Autor;
+				e.setAttribute("style","width:45vw;text-align:right;font-size:1.7vh;padding-right:1%;");
+				container.appendChild(e);
+			}
+				
+			if(color) mainContainer.setAttribute("style","background-color:"+color+";");
+			bigContainer.appendChild(container);
+			mainContainer.appendChild(bigContainer);
+				
+			if(json.Imagen!="null"){
+				var e = document.createElement("img");
+				e.setAttribute("src",json.Imagen);
+				e.setAttribute("width","75%");
+				e.setAttribute("height","auto");
+				mainContainer.appendChild(e);
+			}
+			
+			setTimeout(central, time*1000);
 		}
 		
 		async function centralStart(){
@@ -300,9 +371,7 @@
 					child = scroll.lastElementChild;
 				}					
 				if(noti.Video!="null" && noti.Video!="") showVideo(noti);
-				else{ 
-						setTimeout(central, 5000);
-					}					
+				else showText(noti);					
 			}else central();
 		}
 		
