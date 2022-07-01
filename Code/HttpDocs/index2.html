@@ -59,11 +59,11 @@
   </head>
   <body style="background: #000000;">
     <div style="height: 94vh; width: 100%; position: relative">
-		<p id="categoria" class="banner1">Categoría</p>
+		<p id="categoria" class="banner1"></p>
 		<div id="mainContainer" class="mainContainer">
 			
 		</div>
-		<p id="titulo" class="banner2">Título</p>
+		<p id="titulo" class="banner2">Sen noticias importantes</p>
     </div>
     <div id="containerScroll" class="containerScroll"> 
 		<div id="Scroll" class="Scroll">
@@ -375,98 +375,13 @@
 			}else central();
 		}
 		
-		function add(json,categoria){
-			var scroll = document.getElementById(categoria);
-			var container = document.createElement("div");
-			var color=null;
-			var colorLetra=null;
-			var letra=null;
-			
-			if(json.Color!="null" && json.Color!="")color=json.Color;
-			else color="white";
-			if(json.ColorLetra!="null" && json.ColorLetra!="")ColorLetra=json.ColorLetra;
-			else ColorLetra="black";
-			if(json.Letra!="null" && json.Letra!="")letra=json.Letra;
-			else letra="verdana";
-			
-			if(json.Tipo=="Importante"){
-				var e = document.createElement("div");
-				e.innerHTML="Importante!!!!";
-				e.setAttribute("class","parpadea");
-				if(color!="red") e.setAttribute("style","color:red;font-family:"+letra+";font-size:145%;font-family:helvetica;font-weight:bold;");
-				else e.setAttribute("style","color:yellow;font-family:"+letra+";");
-				container.appendChild(e);
-			}
-			
-			if(categoria=="OUTRAS" && json.Categoria!="OUTRAS" && json.Categoria!="null" && json.Categoria!=""){
-				var e = document.createElement("I");
-				e.innerHTML=json.Categoria;
-				e.setAttribute("style","font-family:"+letra+";font-size:125%;color:Gray");
-				container.appendChild(e);
-			}
-			
-			if(json.Titulo!="null"){
-				var e = document.createElement("div");
-				e.innerHTML=json.Titulo;
-				e.setAttribute("style","padding-right:1%;padding-left:1%;font-family:"+letra+";font-size:200%;color:"+ColorLetra);
-				container.appendChild(e);
-			}
-			
-			if(json.Texto!="null"){
-				var e = document.createElement("div");
-				e.innerHTML=json.Texto;
-				e.setAttribute("style","padding-right:1%;padding-left:1%;font-family:"+letra+";color:"+ColorLetra);
-				container.appendChild(e);
-			}
-			
-			var e = document.createElement("br");
-			container.appendChild(e);
-			
-			if(json.Video!="null" && json.Video!=""){
-				var e = document.createElement("video");
-				e.setAttribute("controls","true");
-				e.setAttribute("width","75%;");
-				var source = document.createElement("source");
-				source.setAttribute("src",json.Video);
-				e.appendChild(source);
-				container.appendChild(e);
-			}
-			
-			if(json.Imagen!="null" && (json.Video=="null" || json.Video=="")){
-				var e = document.createElement("img");
-				e.setAttribute("src",json.Imagen);
-				e.setAttribute("width","75%");
-				e.setAttribute("height","auto");
-				container.appendChild(e);
-				
-			}
-			
-			if(json.Autor!="null"){
-				var e = document.createElement("div");
-				e.innerHTML=json.Autor;
-				e.setAttribute("style","font-family:"+letra+";text-align:right;font-size:75%;padding-right:1%;");
-				container.appendChild(e);
-			}
-			if(json.Fecha!="null"){
-				var e = document.createElement("div");
-				e.innerHTML="("+json.Fecha+")";
-				e.setAttribute("style","font-family:"+letra+";text-align:right;font-size:65%;padding-right:1%;");
-				container.appendChild(e);
-			}
-				var e = document.createElement("hr");
-				container.appendChild(e);
-				
-				if(color)container.setAttribute("style","background-color:"+color+";");
-				scroll.appendChild(container);
-				
-				
-		}
+		
 		
 		
 		
 		
 		Concurrent.Thread.create(scrollStart,"Scroll");
-		//Concurrent.Thread.create(centralStart);
+
 		centralStart();
 
     </script>

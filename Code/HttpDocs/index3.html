@@ -9,7 +9,7 @@
 		}
 		.marxe{
 			float:left;
-			width:9%;
+			width:9vw;
 			height:100%;
 		}
 		.indice{
@@ -21,9 +21,9 @@
 			align-items: center
 		}
 		.container{
-			height:100%;
+			min-height:100%;
 			float:left;
-			text-align: center;
+			text-align:center;
 			border-left: 2px solid #000000;
 		}
 		.seleccion{
@@ -32,6 +32,7 @@
 			display: flex;
 			align-items: center;
 			font-size:2vw;
+			z-index:200;
 		}
 		.categoria{
 			font-size:3vw;
@@ -41,10 +42,14 @@
 		.title{
 			font-size:5vw;
 			border-bottom: 1px solid #888888;
-			background-color:SpringGreen;
 			margin-left:5%;
 			width:70vw;
 			border-radius: 10px;
+		}
+		.vacio{
+			font-size:5vw;
+			width:84vw;
+			padding-left:3vw;
 		}
 		.recurso{
 			width:70vw;
@@ -65,46 +70,239 @@
 			font-size:2vw;
 			margin-left:5%;
 			width:70vw;
+			padding-top:5vh;
+			padding-bottom:5vh;
 		}
 		.flecha{
 			position: fixed;
 			right:3vw;
 			top:47vh;
 			width:6vw;
+			z-index:20;
 		}
 </style>
   </head>
   <body>
     <div class="marxe"></div>
 	<div id="indice" class="indice">
-		<div style="font-weight:bold;text-decoration: underline;" class="seleccion"> Economia </div>
-		<div class="seleccion"> Cultura </div>
-		<div class="seleccion"> Deportes </div>
-		<div class="seleccion"> Outras </div>
 	</div>
 	
 	<div id="container" class="container">
-		<br>
-		<div id="categoria" class="categoria"> Economia </div>
-		<br>
-		<div id="title" class="title"> Goberno e Xunta abren a porta a fondos europeos á nova plataforma de Stellantis </div>
-		<br>
-		<div id="corpo" class="corpo">
-			
-			<div class="datos"> X. A. Taboada </div>
-			<div class="datos"> 11-06-2022 04:01:00 </div>
-			<hr>
-			
-			<div><img class="recurso" src="https://estaticos-cdn.prensaiberica.es/clip/b5314194-2364-4ce2-8b92-d7eb8d986917_21-9-aspect-ratio_75p_1151120.jpg" ></div>
 		
-			<br>
-			<div class="texto"> Stellantis terá unha segunda oportunidade para acceder a fondos  europeos Next Generation cos que cofinanciar a nova plataforma industrial das súas instalacións en Vigo destinadas á fabricación de vehículos 100% eléctricos. Este proxecto quedouse fóra do actual Perte de automoción pola rixidez, especialmente, dos prazos de execución, pois as súas condicións esixen que todas as actuacións estivesen executadas en xuño de 2025, algo que resultaba imposible polo calado da reestruturación que se debe acometer na planta de Balaídos. Con todo, o Goberno central e a Xunta , conxuntamente coa multinacional, negocian que Stellantis poida acceder a outros fondos europeos de próximas convocatorias , non ao Perte actual, cos que financiar a remodelación das instalacións.</div>
-			
-		</div>
+		<div style="height:8vh;width:100%;"></div>
+		<div class="vacio">Benvido ao xornal 24 Horas</div>
 	
 	</div>
 	
-	<div><img class="flecha" src="img/flecha.png"></div>
+	<div><img id="flecha" class="flecha" src="img/flecha.png" hidden onclick="mostrarNoticia()"></div>
 	
   </body>
+	 <script type="text/javascript">
+		var actual=null;
+	 
+		var noticias=null;
+		var nNoticias=0;
+	 
+		async function solicitarCategoria(){
+			await fetch("/Categoria/"+actual)
+					.then(function (response) {
+						if (response.status != 200) {
+							if (response.status == 404) {
+								alert("Categoria not found");
+							}
+							else if (response.status == 400) {
+								alert("Bad request : Please, back to HOME page and insert valid data");
+							}
+							else {
+								throw new Error(response.status);
+							}
+						}
+
+						return response.json();
+					})
+					.then(async function (myJson) {
+						noticias=myJson; nNoticias=0;
+					})
+					.catch(function (error) {
+						console.log("Error: " + error);
+					});
+		}
+		
+		function fillIndice(){
+			fetch("/Categoria")
+				.then(function (response) {
+					if (response.status != 200) {
+						if (response.status == 404) {
+							alert("Categorias list not found");
+						}
+						else if (response.status == 400) {
+							alert("Bad request : Please, back to HOME page and insert valid data");
+						}
+						else {
+							throw new Error(response.status);
+						}
+					}
+
+					return response.json();
+				})
+				.then(function (myJson) {
+					myJson.forEach(obj => {fill(obj);});
+				})
+				.catch(function (error) {
+					console.log("Error: " + error);
+				});
+		}
+			
+		function fill(json){
+			var e = document.createElement("div");
+			e.innerHTML=json;
+			e.setAttribute("class","seleccion");
+			e.setAttribute("id",""+json);
+			e.setAttribute("onclick","indiceClick(\""+json+"\")");
+			document.getElementById("indice").appendChild(e);
+			
+			
+		}
+		
+		async function indiceClick(cat){
+			if(actual) document.getElementById(actual).setAttribute("style","");
+			actual=cat;
+			document.getElementById(cat).setAttribute("style","font-weight: bold;text-decoration: underline;");
+			await solicitarCategoria();
+			if(noticias.length==0) vacio();
+			else mostrarNoticia();
+		}
+		
+		function vacio(){
+			document.getElementById("flecha").setAttribute("hidden","true"); 
+			var container = document.getElementById("container");
+			var child = container.lastElementChild; 
+			while (child) {
+				container.removeChild(child);
+				child = container.lastElementChild;
+			}
+			
+			var e = document.createElement("div");
+			e.setAttribute("style","width:100%;height:5vh;");
+			container.appendChild(e);
+			
+			var e = document.createElement("div");
+			e.innerHTML="A sección "+actual+" atópase baleira";
+			e.setAttribute("class","vacio");	
+			container.appendChild(e);
+			
+			var e = document.createElement("div");
+			e.setAttribute("style","width:100%;height:5vh;");
+			container.appendChild(e);
+			
+			var e = document.createElement("img");
+			e.setAttribute("src","img/periodico.png");
+			e.setAttribute("style","width:35vw");
+			container.appendChild(e);
+		}
+		
+		async function mostrarNoticia(){
+			if( noticias==null) await solicitarCategoria();
+			if( noticias.length==0) {vacio(); return;}
+			if( noticias.length<=nNoticias) await solicitarCategoria();
+			if( noticias.length==0) {vacio(); return;}
+			
+			document.getElementById("flecha").removeAttribute("hidden"); 
+			
+			var json=noticias[nNoticias];
+			nNoticias=nNoticias+1;
+			
+			var container = document.getElementById("container");
+			var child = container.lastElementChild; 
+			while (child) {
+				container.removeChild(child);
+				child = container.lastElementChild;
+			}
+			
+			var color=null;
+			var colorLetra=null;
+			
+			if(json.Color!="null" && json.Color!="")color=json.Color;
+			else color="none";
+			if(json.ColorLetra!="null" && json.ColorLetra!="")ColorLetra=json.ColorLetra;
+			else ColorLetra="black";
+			
+			container.appendChild(document.createElement("br"));
+			
+			var e = document.createElement("div");
+			if(json.Categoria!="null" && json.Categoria!="")e.innerHTML=json.Categoria;
+			else e.innerHTML="OUTRAS";
+			e.setAttribute("class","categoria");
+			container.appendChild(e);
+			
+			container.appendChild(document.createElement("br"));
+			
+			if(json.Titulo!="null"){
+				var e = document.createElement("div");
+				e.innerHTML=json.Titulo;
+				e.setAttribute("class","title");
+				e.setAttribute("style","background-color:"+color+";color:"+ColorLetra);
+				container.appendChild(e);
+			}
+			
+			container.appendChild(document.createElement("br"));
+			
+			var corpo = document.createElement("div");
+			corpo.setAttribute("class","corpo");
+			container.appendChild(corpo);
+			
+			if(json.Autor!="null"){
+				var e = document.createElement("div");
+				e.innerHTML=json.Autor;
+				e.setAttribute("class","datos");
+				corpo.appendChild(e);
+			}
+			if(json.Fecha!="null"){
+				var e = document.createElement("div");
+				e.innerHTML="("+json.Fecha+")";
+				e.setAttribute("class","datos");
+				corpo.appendChild(e);
+			}
+			
+			corpo.appendChild(document.createElement("hr"));
+			
+			if(json.Video!="null" && json.Video!=""){
+				var e = document.createElement("video");
+				e.setAttribute("controls","true");
+				e.setAttribute("class","recurso");
+				var source = document.createElement("source");
+				source.setAttribute("src",json.Video);
+				e.appendChild(source);
+				corpo.appendChild(e);
+			}
+			
+			if(json.Imagen!="null" && json.Imagen!="" && (json.Video=="null" || json.Video=="")){
+				var e = document.createElement("img");
+				e.setAttribute("src",json.Imagen);
+				e.setAttribute("class","recurso");
+				corpo.appendChild(e);
+				
+			}
+			
+			if(json.Texto!="null"){
+				var e = document.createElement("div");
+				e.innerHTML=json.Texto;
+				e.setAttribute("class","texto");
+				corpo.appendChild(e);
+			}
+			
+			if(json.Imagen!="null" && json.Imagen!="" && json.Video!="null" && json.Video!=""){
+				var e = document.createElement("img");
+				e.setAttribute("src",json.Imagen);
+				e.setAttribute("class","recurso");
+				corpo.appendChild(e);
+				
+			}
+						
+		}
+		
+		
+		fillIndice();
+		
+	 </script>
 </html>
