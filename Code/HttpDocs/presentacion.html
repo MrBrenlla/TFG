@@ -4,8 +4,8 @@
     <title></title>
 	<style type="text/css">
 		body{
-			background-color:Ivory;
-			font-family:Times New Roman;
+			background-color:#Gainsboro;
+			font-family:Calibri;
 		}
 		.marxe{
 			float:left;
@@ -13,27 +13,32 @@
 			height:100%;
 		}
 		.indice{
-			width:100%; 
+			max-width:100%; 
+			height:7%;
 			border-bottom: 2px solid #000000;
 			display: flex;
 			justify-content: space-around;
 			align-items: center
 		}
 		.container{
-			height:100%;
+			height:90%;
 			text-align:center;
+			display: flex;
+			flex-flow: column;
 		}
 		.corpo{
-			height:100%;
+			flex: 1 1 auto;
+			height:auto;
 			display: flex;
 			justify-content: center;
+			align-items: center
 		}
 		.seleccion{
-			color: MediumBlue;
+			color: DimGray;
 			height:5vh;
 			display: flex;
 			align-items: center;
-			font-size:2vw;
+			font-size:1.5vw;
 			z-index:200;
 		}
 		.categoria{
@@ -42,11 +47,14 @@
 			width:70vw;
 		}
 		.title{
-			font-size:5vw;
-			border-bottom: 1px solid #888888;
+			font-size:4.5vw;
 			margin-left:5%;
 			max-width:90vw;
 			border-radius: 10px;
+			flex: 0 1 auto;
+			-webkit-box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.75);
+			-moz-box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.75);
+			box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.75);
 		}
 		.vacio{
 			font-size:5vw;
@@ -55,7 +63,6 @@
 		}
 		.recurso{	
 			border-radius: 10px;
-			max-height:100%;
 			object-fit: contain;
 			padding-right:2%;
 			padding-left:2%;
@@ -71,6 +78,7 @@
 			text-align:right;
 		}
 		.texto{
+			height:min-content;
 			float: left;
 			text-align:left;
 			font-size:3.5vh;
@@ -82,7 +90,7 @@
 		}
 		.flecha{
 			position: fixed;
-			right:3vw;
+			right:1vw;
 			top:47vh;
 			width:6vw;
 			z-index:20;
@@ -90,19 +98,17 @@
 </style>
   </head>
   <body>
-	<div style="width:100vw;height:100vh;">
-		<div id="indice" class="indice">
-		</div>
-		
-		<div id="container" class="container">
-			
-			<div style="height:8vh;width:100%;"></div>
-			<div class="vacio">Benvido ao xornal 24 Horas</div>
-		
-		</div>
-		
-		<div><img id="flecha" class="flecha" src="img/flecha.png" hidden onclick="mostrarNoticia()"></div>
+	<div id="indice" class="indice">
 	</div>
+		
+	<div id="container" class="container">
+		
+		<div style="height:8vh;width:100%;"></div>
+		<div class="vacio">Benvido ao xornal 24 Horas</div>
+		
+	</div>
+		
+	<div><img id="flecha" class="flecha" src="img/flecha.png" hidden onclick="mostrarNoticia()"></div>
   </body>
 	 <script type="text/javascript">
 		var actual=null;
@@ -153,7 +159,7 @@
 					return response.json();
 				})
 				.then(function (myJson) {
-					myJson.forEach(obj => {fill(obj);});
+					myJson.forEach(obj => {if(obj!="OUTRAS") fill(obj);});
 				})
 				.catch(function (error) {
 					console.log("Error: " + error);
@@ -198,14 +204,6 @@
 			e.setAttribute("class","vacio");	
 			container.appendChild(e);
 			
-			var e = document.createElement("div");
-			e.setAttribute("style","width:100%;height:5vh;");
-			container.appendChild(e);
-			
-			var e = document.createElement("img");
-			e.setAttribute("src","img/periodico.png");
-			e.setAttribute("style","width:35vw");
-			container.appendChild(e);
 		}
 		
 		async function mostrarNoticia(){
@@ -214,7 +212,8 @@
 			if( noticias.length<=nNoticias) await solicitarCategoria();
 			if( noticias.length==0) {vacio(); return;}
 			
-			document.getElementById("flecha").removeAttribute("hidden"); 
+			if(nNoticias<noticias.length-1) document.getElementById("flecha").removeAttribute("hidden"); 
+			else document.getElementById("flecha").setAttribute("hidden","true"); 
 			
 			var json=noticias[nNoticias];
 			nNoticias=nNoticias+1;
