@@ -1,0 +1,292 @@
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title></title>
+	<style type="text/css">
+		body{
+			background-color:Ivory;
+			font-family:Times New Roman;
+		}
+		.marxe{
+			float:left;
+			width:9vw;
+			height:100%;
+		}
+		.indice{
+			width:100%; 
+			border-bottom: 2px solid #000000;
+			display: flex;
+			justify-content: space-around;
+			align-items: center
+		}
+		.container{
+			height:100%;
+			text-align:center;
+		}
+		.corpo{
+			height:100%;
+			display: flex;
+			justify-content: center;
+		}
+		.seleccion{
+			color: MediumBlue;
+			height:5vh;
+			display: flex;
+			align-items: center;
+			font-size:2vw;
+			z-index:200;
+		}
+		.categoria{
+			font-size:3vw;
+			margin-left:5%;
+			width:70vw;
+		}
+		.title{
+			font-size:5vw;
+			border-bottom: 1px solid #888888;
+			margin-left:5%;
+			max-width:90vw;
+			border-radius: 10px;
+		}
+		.vacio{
+			font-size:5vw;
+			width:84vw;
+			padding-left:3vw;
+		}
+		.recurso{	
+			border-radius: 10px;
+			max-height:100%;
+			object-fit: contain;
+			padding-right:2%;
+			padding-left:2%;
+		}
+		hr{
+			width:70vw;
+			margin-left:5%;	
+		}
+		.datos{
+			font-size:1vw;
+			margin-left:5%;
+			width:70vw;
+			text-align:right;
+		}
+		.texto{
+			float: left;
+			text-align:left;
+			font-size:3.5vh;
+			padding-top:5vh;
+			padding-bottom:5vh;
+			max-height:100%;
+			padding-right:2%;
+			padding-left:2%;
+		}
+		.flecha{
+			position: fixed;
+			right:3vw;
+			top:47vh;
+			width:6vw;
+			z-index:20;
+		}
+</style>
+  </head>
+  <body>
+	<div style="width:100vw;height:100vh;">
+		<div id="indice" class="indice">
+		</div>
+		
+		<div id="container" class="container">
+			
+			<div style="height:8vh;width:100%;"></div>
+			<div class="vacio">Benvido ao xornal 24 Horas</div>
+		
+		</div>
+		
+		<div><img id="flecha" class="flecha" src="img/flecha.png" hidden onclick="mostrarNoticia()"></div>
+	</div>
+  </body>
+	 <script type="text/javascript">
+		var actual=null;
+	 
+		var noticias=null;
+		var nNoticias=0;
+	 
+		async function solicitarCategoria(){
+			await fetch("/Categoria/"+actual)
+					.then(function (response) {
+						if (response.status != 200) {
+							if (response.status == 404) {
+								alert("Categoria not found");
+							}
+							else if (response.status == 400) {
+								alert("Bad request : Please, back to HOME page and insert valid data");
+							}
+							else {
+								throw new Error(response.status);
+							}
+						}
+
+						return response.json();
+					})
+					.then(async function (myJson) {
+						noticias=myJson; nNoticias=0;
+					})
+					.catch(function (error) {
+						console.log("Error: " + error);
+					});
+		}
+		
+		function fillIndice(){
+			fetch("/Categoria")
+				.then(function (response) {
+					if (response.status != 200) {
+						if (response.status == 404) {
+							alert("Categorias list not found");
+						}
+						else if (response.status == 400) {
+							alert("Bad request : Please, back to HOME page and insert valid data");
+						}
+						else {
+							throw new Error(response.status);
+						}
+					}
+
+					return response.json();
+				})
+				.then(function (myJson) {
+					myJson.forEach(obj => {fill(obj);});
+				})
+				.catch(function (error) {
+					console.log("Error: " + error);
+				});
+		}
+			
+		function fill(json){
+			var e = document.createElement("div");
+			e.innerHTML=json;
+			e.setAttribute("class","seleccion");
+			e.setAttribute("id",""+json);
+			e.setAttribute("onclick","indiceClick(\""+json+"\")");
+			document.getElementById("indice").appendChild(e);
+			
+			
+		}
+		
+		async function indiceClick(cat){
+			if(actual) document.getElementById(actual).setAttribute("style","");
+			actual=cat;
+			document.getElementById(cat).setAttribute("style","font-weight: bold;text-decoration: underline;");
+			await solicitarCategoria();
+			if(noticias.length==0) vacio();
+			else mostrarNoticia();
+		}
+		
+		function vacio(){
+			document.getElementById("flecha").setAttribute("hidden","true"); 
+			var container = document.getElementById("container");
+			var child = container.lastElementChild; 
+			while (child) {
+				container.removeChild(child);
+				child = container.lastElementChild;
+			}
+			
+			var e = document.createElement("div");
+			e.setAttribute("style","width:100%;height:5vh;");
+			container.appendChild(e);
+			
+			var e = document.createElement("div");
+			e.innerHTML="A sección "+actual+" atópase baleira";
+			e.setAttribute("class","vacio");	
+			container.appendChild(e);
+			
+			var e = document.createElement("div");
+			e.setAttribute("style","width:100%;height:5vh;");
+			container.appendChild(e);
+			
+			var e = document.createElement("img");
+			e.setAttribute("src","img/periodico.png");
+			e.setAttribute("style","width:35vw");
+			container.appendChild(e);
+		}
+		
+		async function mostrarNoticia(){
+			if( noticias==null) await solicitarCategoria();
+			if( noticias.length==0) {vacio(); return;}
+			if( noticias.length<=nNoticias) await solicitarCategoria();
+			if( noticias.length==0) {vacio(); return;}
+			
+			document.getElementById("flecha").removeAttribute("hidden"); 
+			
+			var json=noticias[nNoticias];
+			nNoticias=nNoticias+1;
+			
+			var container = document.getElementById("container");
+			var child = container.lastElementChild; 
+			while (child) {
+				container.removeChild(child);
+				child = container.lastElementChild;
+			}
+			
+			var color=null;
+			var colorLetra=null;
+			
+			if(json.Color!="null" && json.Color!="")color=json.Color;
+			else color="none";
+			if(json.ColorLetra!="null" && json.ColorLetra!="")ColorLetra=json.ColorLetra;
+			else ColorLetra="black";
+			
+			container.appendChild(document.createElement("br"));
+			
+			if(json.Titulo!="null"){
+				var e = document.createElement("div");
+				e.innerHTML=json.Titulo;
+				e.setAttribute("class","title");
+				e.setAttribute("style","background-color:"+color+";color:"+ColorLetra);
+				container.appendChild(e);
+			}
+			
+			var ancho;
+			if( (json.Imagen!="null" && json.Imagen!="") || (json.Video!="null" && json.Video!=""))ancho=35;
+			else ancho = 70;
+			
+			container.appendChild(document.createElement("br"));
+			
+			var corpo = document.createElement("div");
+			corpo.setAttribute("class","corpo");
+			container.appendChild(corpo);
+			
+			if(json.Texto!="null"){
+				var e = document.createElement("div");
+				e.innerHTML=json.Texto;
+				e.setAttribute("class","texto");
+				e.setAttribute("style","width:"+ancho+"vw;");
+				corpo.appendChild(e);
+			}else ancho=70;
+			
+			if(json.Video!="null" && json.Video!=""){
+				var e = document.createElement("video");
+				e.setAttribute("controls","true");
+				e.setAttribute("class","recurso");
+				e.setAttribute("style","width:"+ancho+"vw;");
+				var source = document.createElement("source");
+				source.setAttribute("src",json.Video);
+				e.appendChild(source);
+				corpo.appendChild(e);
+			}
+			
+			if(json.Imagen!="null" && json.Imagen!="" && (json.Video=="null" || json.Video=="")){
+				var e = document.createElement("img");
+				e.setAttribute("src",json.Imagen);
+				e.setAttribute("class","recurso");
+				e.setAttribute("style","width:"+ancho+"vw;");
+				corpo.appendChild(e);
+				
+			}
+			
+						
+		}
+		
+		
+		fillIndice();
+		
+	 </script>
+</html>
